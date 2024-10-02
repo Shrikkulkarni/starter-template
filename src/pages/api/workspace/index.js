@@ -4,7 +4,6 @@ import {
   validateCreateWorkspace,
   validateSession,
 } from '@/config/api-validation/index';
-import { createWorkspace } from '@/prisma/services/workspace';
 
 const handler = async (req, res) => {
   const { method } = req;
@@ -14,8 +13,17 @@ const handler = async (req, res) => {
     await validateCreateWorkspace(req, res);
     const { name } = req.body;
     let slug = slugify(name.toLowerCase());
-    await createWorkspace(session.user.userId, session.user.email, name, slug);
-    res.status(200).json({ data: { name, slug } });
+    
+    // Since we're not using a database, we'll just return a success message
+    // In a real application, you might want to implement some kind of in-memory workspace management
+    res.status(200).json({ 
+      data: { 
+        name, 
+        slug,
+        message: 'Workspace creation simulated',
+        creator: session.user.email
+      } 
+    });
   } else {
     res
       .status(405)

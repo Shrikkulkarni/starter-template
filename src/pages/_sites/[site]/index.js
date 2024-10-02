@@ -4,10 +4,21 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import Meta from '@/components/Meta';
-import {
-  getSiteWorkspace,
-  getWorkspacePaths,
-} from '@/prisma/services/workspace';
+
+// Replace these functions with API calls or other methods of fetching workspace data
+const fetchSiteWorkspace = async (site) => {
+  // Example API call (you can replace this with the actual API endpoint or method)
+  const response = await fetch(`https://example.com/api/workspaces/${site}`);
+  if (!response.ok) return null;
+  return await response.json();
+};
+
+const fetchWorkspacePaths = async () => {
+  // Example API call to get workspace paths (you can replace this with the actual API endpoint or method)
+  const response = await fetch('https://example.com/api/workspaces/paths');
+  if (!response.ok) return [];
+  return await response.json();
+};
 
 const Site = ({ workspace }) => {
   const router = useRouter();
@@ -57,7 +68,7 @@ const Site = ({ workspace }) => {
 };
 
 export const getStaticPaths = async () => {
-  const paths = await getWorkspacePaths();
+  const paths = await fetchWorkspacePaths();
   return {
     paths,
     fallback: true,
@@ -66,7 +77,7 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params }) => {
   const { site } = params;
-  const siteWorkspace = await getSiteWorkspace(site, site.includes('.'));
+  const siteWorkspace = await fetchSiteWorkspace(site);
   let workspace = null;
 
   if (siteWorkspace) {

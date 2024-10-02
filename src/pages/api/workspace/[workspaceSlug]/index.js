@@ -1,20 +1,21 @@
 import { validateSession } from '@/config/api-validation';
-import { deleteWorkspace } from '@/prisma/services/workspace';
 
 const handler = async (req, res) => {
   const { method } = req;
 
   if (method === 'DELETE') {
     const session = await validateSession(req, res);
-    deleteWorkspace(
-      session.user.userId,
-      session.user.email,
-      req.query.workspaceSlug
-    )
-      .then((slug) => res.status(200).json({ data: { slug } }))
-      .catch((error) =>
-        res.status(404).json({ errors: { error: { msg: error.message } } })
-      );
+    const { workspaceSlug } = req.query;
+
+    // Since we're not using a database, we'll just return a success message
+    // In a real application, you might want to implement some kind of in-memory workspace management
+    res.status(200).json({ 
+      data: { 
+        slug: workspaceSlug,
+        message: 'Workspace deletion simulated',
+        user: session.user.email
+      } 
+    });
   } else {
     res
       .status(405)

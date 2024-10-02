@@ -1,17 +1,13 @@
 import { validateSession } from '@/config/api-validation';
-import { deactivate } from '@/prisma/services/user';
-
-const ALLOW_DEACTIVATION = false;
 
 const handler = async (req, res) => {
   const { method } = req;
 
   if (method === 'DELETE') {
     const session = await validateSession(req, res);
-    if (ALLOW_DEACTIVATION) {
-      await deactivate(session.user.userId);
-    }
-    res.status(200).json({ data: { email: session.user.email } });
+    // Since we're not using a database, we'll just return a success message
+    // In a real application, you might want to implement some kind of in-memory user management
+    res.status(200).json({ data: { email: session.user.email, message: 'User deactivation simulated' } });
   } else {
     res
       .status(405)

@@ -10,8 +10,10 @@ const handler = async (req, res) => {
     const session = await validateSession(req, res);
     await validateUpdateEmail(req, res);
     const { email } = req.body;
-    await updateEmail(session.user.userId, email, session.user.email);
-    res.status(200).json({ data: { email } });
+    
+    // Since we're not using a database, we'll just return a success message
+    // In a real application, you might want to implement some kind of in-memory user management
+    res.status(200).json({ data: { email, message: 'Email update simulated' } });
   } else {
     res
       .status(405)
