@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
+import { getSession } from 'next-auth/react';
 
 import Button from '@/components/Button/index';
 import Card from '@/components/Card/index';
@@ -12,12 +13,12 @@ import api from '@/lib/common/api';
 import { useWorkspace } from '@/providers/workspace';
 import { useTranslation } from "react-i18next";
 
-const Welcome = () => {
+const Welcome = ({ serverInvitations, serverWorkspaces }) => {
   const router = useRouter();
   const { data: invitationsData, isLoading: isFetchingInvitations } =
-    useInvitations();
+    useInvitations(serverInvitations);
   const { data: workspacesData, isLoading: isFetchingWorkspaces } =
-    useWorkspaces();
+    useWorkspaces(serverWorkspaces);
   const { setWorkspace } = useWorkspace();
   const { t } = useTranslation();
   const [isSubmitting, setSubmittingState] = useState(false);
@@ -146,5 +147,45 @@ const Welcome = () => {
     </AccountLayout>
   );
 };
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
+
+  // Fetch initial data server-side
+  const [invitationsResponse, workspacesResponse] = await Promise.all([
+    fetch(`${process.env.NEXTAUTH_URL}/api/workspaces/invitations`, {
+      headers: {
+        Cookie: context.req.headers.cookie,
+      },
+    }),
+    fetch(`${process.env.NEXTAUTH_URL}/api/workspaces`, {
+      headers: {
+        Cookie: context.req.headers.cookie,
+      },
+    }),
+  ]);
+
+  const [serverInvitations, serverWorkspaces] = await Promise.all([
+    invitationsResponse.json(),
+    workspacesResponse.json(),
+  ]);
+
+  return {
+    props: {
+      session,
+      serverInvitations,
+      serverWorkspaces,
+    },
+  };
+}
 
 export default Welcome;

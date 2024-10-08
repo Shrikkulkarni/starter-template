@@ -1,12 +1,10 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { getSession } from 'next-auth/react';
 
 import Meta from '@/components/Meta/index';
 import { PublicLayout } from '@/layouts/index';
 
-const Payment = () => {
-  const { query } = useRouter();
-
+const Payment = ({ status }) => {
   return (
     <PublicLayout>
       <Meta title="Nextacular - Subscription Status" />
@@ -17,14 +15,14 @@ const Payment = () => {
               <span className="block">Subscription Purchase:</span>
               <span
                 className={`block ${
-                  query.status === 'success' ? 'text-green-600' : 'text-red-600'
+                  status === 'success' ? 'text-green-600' : 'text-red-600'
                 }`}
               >
-                {query.status === 'success' ? 'Success' : 'Cancelled'}
+                {status === 'success' ? 'Success' : 'Cancelled'}
               </span>
             </h1>
             <p className="mt-5 text-center text-gray-600">
-              {query.status === 'success'
+              {status === 'success'
                 ? 'Thank you for your purchase!'
                 : 'You can come back to the billing page at a later time.'}
             </p>
@@ -42,5 +40,27 @@ const Payment = () => {
     </PublicLayout>
   );
 };
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
+    };
+  }
+
+  const { status } = context.query;
+
+  return {
+    props: {
+      session,
+      status: status || null,
+    },
+  };
+}
 
 export default Payment;

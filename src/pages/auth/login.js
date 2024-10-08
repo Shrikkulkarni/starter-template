@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getProviders, signIn, useSession } from 'next-auth/react';
+import { getProviders, signIn, useSession, getSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
 import isEmail from 'validator/lib/isEmail';
 
@@ -8,13 +8,16 @@ import Meta from '@/components/Meta/index';
 import { AuthLayout } from '@/layouts/index';
 import { useTranslation } from "react-i18next";
 
-const Login = () => {
-  const { status } = useSession();
+const Login = ({ serverSession }) => {
+  const { data: clientSession, status } = useSession();
   const [email, setEmail] = useState('');
   const { t } = useTranslation();
   const [isSubmitting, setSubmittingState] = useState(false);
   const [socialProviders, setSocialProviders] = useState([]);
   const validate = isEmail(email);
+
+  const session = serverSession || clientSession;
+  const sessionStatus = serverSession ? 'authenticated' : status;
 
   const handleEmailChange = (event) => setEmail(event.target.value);
 
@@ -78,10 +81,10 @@ const Login = () => {
           />
           <button
             className="py-2 text-white bg-blue-600 rounded hover:bg-blue-500 disabled:opacity-75"
-            disabled={status === 'loading' || !validate || isSubmitting}
+            disabled={sessionStatus === 'loading' || !validate || isSubmitting}
             onClick={signInWithEmail}
           >
-            {status === 'loading'
+            {sessionStatus === 'loading'
               ? t("login.message.checking.session")
               : isSubmitting
                 ? t('login.message.sendinglink')
@@ -96,7 +99,7 @@ const Login = () => {
                 <button
                   key={index}
                   className="py-2 bg-gray-100 border rounded hover:bg-gray-50 disabled:opacity-75"
-                  disabled={status === 'loading'}
+                  disabled={sessionStatus === 'loading'}
                   onClick={() => signInWithSocial(provider.id)}
                 >
                   {provider.name}
@@ -109,5 +112,14 @@ const Login = () => {
     </AuthLayout>
   );
 };
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  return {
+    props: {
+      serverSession: session,
+    },
+  };
+}
 
 export default Login;
