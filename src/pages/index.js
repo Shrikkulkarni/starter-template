@@ -9,13 +9,6 @@ const Home = () => {
         title="NextJS SaaS Boilerplate"
         description="A boilerplate for your NextJS SaaS projects."
       />
-      <Hero />
-      <Features />
-      <Pricing />
-      <Guides />
-      <Testimonial />
-      <CallToAction />
-      <Footer />
     </LandingLayout>
   );
 };

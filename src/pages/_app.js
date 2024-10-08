@@ -3,10 +3,10 @@ import Router, { useRouter } from 'next/router';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
 import ReactGA from 'react-ga';
-import TopBarProgress from 'react-topbar-progress-indicator';
 import i18n from "i18next";
 import { useTranslation, initReactI18next } from "react-i18next";
 import '@/styles/globals.css';
+import { useSession } from 'next-auth/react';
 let rawdata = require('../messages/en.json');
 
 let langCode = "en"
