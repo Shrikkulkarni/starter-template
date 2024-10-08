@@ -1,14 +1,6 @@
 import Meta from '@/components/Meta/index';
 import { LandingLayout } from '@/layouts/index';
-import {
-  CallToAction,
-  Features,
-  Footer,
-  Guides,
-  Hero,
-  Pricing,
-  Testimonial,
-} from '@/sections/index';
+
 
 const Home = () => {
   return (
