@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import { Toaster } from 'react-hot-toast';
 
 import Content from '@/components/Content/index';
