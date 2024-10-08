@@ -1,9 +1,11 @@
-module.exports = {
+
+const config = {
   content: [
-    './src/**/*.{js,ts,jsx,tsx}',
+    "./src/**/*.{js,jsx,mdx}", 
   ],
   theme: {
     extend: {},
   },
   plugins: [],
-}
+};
+export default config;
